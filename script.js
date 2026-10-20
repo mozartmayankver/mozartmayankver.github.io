@@ -1,6 +1,6 @@
 "use strict";
 
-const EVENT_TIME = new Date("2026-10-26T19:30:00+05:30").getTime();
+const EVENT_TIME = new Date("2026-10-26T19:00:00+05:30").getTime();
 const MAP_URL = "https://maps.app.goo.gl/p2NmHYaDJmxmdck79";
 const openButton = document.querySelector("#open-invitation");
 const opening = document.querySelector("#opening");
@@ -53,69 +53,6 @@ function scrollWithinActiveSegment(position) {
   const { top, bottom } = activeScrollBounds();
   window.scrollTo({ top: Math.min(bottom, Math.max(top, position)), behavior: "instant" });
 }
-
-function keepScrollInsideSegment(event, delta) {
-  const { top, bottom } = activeScrollBounds();
-  const current = window.scrollY;
-  const destination = current + delta;
-  const edge = destination < top ? top : destination > bottom ? bottom : null;
-  if (edge === null && !((delta < 0 && current <= top) || (delta > 0 && current >= bottom))) return;
-  if (event.cancelable) event.preventDefault();
-  if (edge !== null && Math.abs(edge - current) > 1) {
-    window.scrollTo({ top: edge, behavior: "smooth" });
-  }
-}
-
-window.addEventListener("wheel", (event) => {
-  const multiplier = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? window.innerHeight : 1;
-  keepScrollInsideSegment(event, event.deltaY * multiplier);
-}, { passive: false });
-
-let lastTouchY = null;
-window.addEventListener("touchstart", (event) => {
-  lastTouchY = event.touches.length === 1 ? event.touches[0].clientY : null;
-}, { passive: true });
-window.addEventListener("touchmove", (event) => {
-  if (event.touches.length !== 1 || lastTouchY === null) return;
-  const y = event.touches[0].clientY;
-  keepScrollInsideSegment(event, lastTouchY - y);
-  lastTouchY = y;
-}, { passive: false });
-window.addEventListener("touchend", () => { lastTouchY = null; }, { passive: true });
-window.addEventListener("touchcancel", () => { lastTouchY = null; }, { passive: true });
-
-window.addEventListener("keydown", (event) => {
-  const editable = event.target.closest("input, textarea, select, [contenteditable='true']");
-  const focusedButton = event.target.closest("button");
-  if (editable || (event.key === " " && focusedButton)) return;
-  const scrollKeys = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "];
-  if (!scrollKeys.includes(event.key)) return;
-  if (event.key === "Home") {
-    event.preventDefault();
-    window.scrollTo({ top: activeScrollBounds().top, behavior: "smooth" });
-    return;
-  }
-  if (event.key === "End") {
-    event.preventDefault();
-    window.scrollTo({ top: activeScrollBounds().bottom, behavior: "smooth" });
-    return;
-  }
-  const pageStep = window.innerHeight * 0.8;
-  const delta = event.key === "ArrowDown" ? 60 : event.key === "ArrowUp" ? -60 : event.key === "PageDown" || event.key === " " ? pageStep : event.key === "PageUp" ? -pageStep : 0;
-  keepScrollInsideSegment(event, delta);
-});
-
-let correctingScroll = false;
-window.addEventListener("scroll", () => {
-  if (correctingScroll) return;
-  const { top, bottom } = activeScrollBounds();
-  if (window.scrollY < top - 1 || window.scrollY > bottom + 1) {
-    correctingScroll = true;
-    window.scrollTo({ top: Math.min(bottom, Math.max(top, window.scrollY)), behavior: "instant" });
-    requestAnimationFrame(() => { correctingScroll = false; });
-  }
-}, { passive: true });
-window.addEventListener("resize", alignActiveSegment, { passive: true });
 
 function navigateToPage(targetId) {
   if (pageNavigationBusy) return;
