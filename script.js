@@ -54,10 +54,21 @@ function scrollWithinActiveSegment(position) {
   window.scrollTo({ top: Math.min(bottom, Math.max(top, position)), behavior: "instant" });
 }
 
-window.addEventListener("wheel", (event) => {
+function keepScrollInsideSegment(event, delta) {
+  const { top, bottom } = activeScrollBounds();
+  const current = window.scrollY;
+  const destination = current + delta;
+  const edge = destination < top ? top : destination > bottom ? bottom : null;
+  if (edge === null && !((delta < 0 && current <= top) || (delta > 0 && current >= bottom))) return;
   if (event.cancelable) event.preventDefault();
+  if (edge !== null && Math.abs(edge - current) > 1) {
+    window.scrollTo({ top: edge, behavior: "smooth" });
+  }
+}
+
+window.addEventListener("wheel", (event) => {
   const multiplier = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? window.innerHeight : 1;
-  scrollWithinActiveSegment(window.scrollY + event.deltaY * multiplier);
+  keepScrollInsideSegment(event, event.deltaY * multiplier);
 }, { passive: false });
 
 let lastTouchY = null;
@@ -67,11 +78,11 @@ window.addEventListener("touchstart", (event) => {
 window.addEventListener("touchmove", (event) => {
   if (event.touches.length !== 1 || lastTouchY === null) return;
   const y = event.touches[0].clientY;
-  if (event.cancelable) event.preventDefault();
-  scrollWithinActiveSegment(window.scrollY + lastTouchY - y);
+  keepScrollInsideSegment(event, lastTouchY - y);
   lastTouchY = y;
 }, { passive: false });
 window.addEventListener("touchend", () => { lastTouchY = null; }, { passive: true });
+window.addEventListener("touchcancel", () => { lastTouchY = null; }, { passive: true });
 
 window.addEventListener("keydown", (event) => {
   const editable = event.target.closest("input, textarea, select, [contenteditable='true']");
@@ -79,12 +90,19 @@ window.addEventListener("keydown", (event) => {
   if (editable || (event.key === " " && focusedButton)) return;
   const scrollKeys = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "];
   if (!scrollKeys.includes(event.key)) return;
-  event.preventDefault();
+  if (event.key === "Home") {
+    event.preventDefault();
+    window.scrollTo({ top: activeScrollBounds().top, behavior: "smooth" });
+    return;
+  }
+  if (event.key === "End") {
+    event.preventDefault();
+    window.scrollTo({ top: activeScrollBounds().bottom, behavior: "smooth" });
+    return;
+  }
   const pageStep = window.innerHeight * 0.8;
   const delta = event.key === "ArrowDown" ? 60 : event.key === "ArrowUp" ? -60 : event.key === "PageDown" || event.key === " " ? pageStep : event.key === "PageUp" ? -pageStep : 0;
-  if (event.key === "Home") scrollWithinActiveSegment(activeScrollBounds().top);
-  else if (event.key === "End") scrollWithinActiveSegment(activeScrollBounds().bottom);
-  else scrollWithinActiveSegment(window.scrollY + delta);
+  keepScrollInsideSegment(event, delta);
 });
 
 let correctingScroll = false;
