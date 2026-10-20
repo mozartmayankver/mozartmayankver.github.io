@@ -35,10 +35,9 @@ This folder is designed to be the repository root, so `index.html`, `styles.css`
 ## Final checks and future updates
 
 - Confirm `yug-photo.png` loads and adjust its crop if needed.
-- Confirm the countdown is counting to 26 October 2026 at 7:30 PM IST.
+- Confirm the countdown is counting to 26 October 2026 at 7:00 PM IST.
 - Open both venue buttons and confirm they go to the supplied Google Maps location.
 - Open the invitation, check keyboard focus, and test reduced motion in your device settings.
-- Try **Share This Invitation** in a supported mobile browser; otherwise it copies the page link.
 - Check the layout on a narrow phone and desktop. Social preview metadata should use an absolute published image URL.
 
 For later edits, update the files, then run `git add .`, `git commit -m "Describe the update"`, and `git push`. GitHub Pages republishes the changes.
@@ -46,6 +45,6 @@ For later edits, update the files, then run `git add .`, `git commit -m "Describ
 ## Event details
 
 - **Date:** Monday, 26 October 2026
-- **Time:** 7:30 PM onwards, IST (UTC+05:30)
+- **Time:** 7:00 PM onwards, IST (UTC+05:30)
 - **Venue:** SOVANA by Trees and Treats
 - **Map:** https://maps.app.goo.gl/p2NmHYaDJmxmdck79

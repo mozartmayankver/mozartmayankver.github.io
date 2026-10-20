@@ -374,6 +374,6 @@ body{background:radial-gradient(ellipse at 50% 8%,#f8f4e9 0,#dbeaf4 72%,#d6e7f2 
 @keyframes cloud-puff-out{0%,20%{opacity:var(--puff-opacity);transform:translateX(0) scale(1)}100%{opacity:0;transform:translateX(var(--exit-x)) scale(1.18)}}
 @media(max-width:760px){.page-transition .cloud-bank{width:80%}.book-next{min-height:48px;margin-top:1.1rem;font-size:.72rem;letter-spacing:.09em}.hero .book-next,.story .book-next{grid-column:1/-1}.story .book-next{margin-top:.65rem}.page-footer{width:calc(100% - 1rem);min-height:300px;margin-bottom:2rem;padding:4.2rem 1.3rem 3.8rem}.page-footer:before{left:1.3rem;font-size:.5rem;letter-spacing:.12em}}
 @media(prefers-reduced-motion:reduce){.page-transition{display:none!important}.book-next{transition:none!important}}
-html.guided-navigation{scroll-snap-type:none!important;overscroll-behavior:none}
-html.guided-navigation,html.guided-navigation body{overscroll-behavior:none}
+html.guided-navigation{scroll-snap-type:none!important;overscroll-behavior-y:auto}
+html.guided-navigation body{overscroll-behavior-y:auto}
 .skip-link{border:0;cursor:pointer}
